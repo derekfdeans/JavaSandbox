@@ -1,21 +1,29 @@
-import java.io.Console;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.ArrayList;
 
 public class Main {
-    public static void main(String[] args) {
-        Console console = System.console();
-        if (console == null) {
-            System.err.println("no console.");
-            System.exit(1);
-        }
+    public static void main(String[] args) throws IOException {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Hello");
+        list.add("Oh my god");
+        list.add("jkdshgkjahgkjhaskjghkjadshg!!!");
 
-        try (PrintWriter writer = console.writer()) {
-            writer.println("heyy");
+        System.out.println("starting serialization..");
+        try (FileOutputStream fileOutput = new FileOutputStream("text.txt");
+             ObjectOutputStream output = new ObjectOutputStream(fileOutput)) {
+            output.writeObject(list);
         }
+        System.out.println("end serialization!\n");
 
-        char [] password = console.readPassword("what's your passowrd?");
-        for (char c : password) {
-            console.format(String.valueOf(c));
+        System.out.println("start deserialization...");
+        try (FileInputStream fileInput = new FileInputStream("text.txt");
+             ObjectInputStream objectInput = new ObjectInputStream(fileInput)) {
+            for (String string : (ArrayList<String>) objectInput.readObject()) {
+                System.out.println(string);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
+        System.out.println("end deserialzation!");
     }
 }
